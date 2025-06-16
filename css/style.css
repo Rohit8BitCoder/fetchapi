@@ -1,0 +1,11 @@
+.img-fluid {
+    width: 220px;
+    height: 305px;
+}
+
+@media (min-width: 768px) {
+  .sticky-sidebar {
+    position: sticky;
+    height: 100vh;
+  }
+}
