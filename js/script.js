@@ -1,3 +1,13 @@
+
+ function generateSku(product) {
+
+  const cat = product.category ? product.category.slice(0, 3).toUpperCase() : "GEN";
+  const id = product.id;
+  return `SKU-${cat}-${id}`;
+}
+
+
+
 const api = "https://fakestoreapi.com/products";
 
 // -------------------------------------------
@@ -9,6 +19,10 @@ fetch(api)
     const productsContainer = document.getElementById('products');
 
     products.forEach((product) => {
+      
+       const sku = generateSku(product);
+       console.log(sku);
+
       // Create product card
       const productCard = document.createElement('div');
       productCard.innerHTML = `

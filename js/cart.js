@@ -2,10 +2,10 @@ function renderCartTotals(subtotal,tax,total,discount){
   document.getElementById('cart-totals').innerHTML =`
   <div class="card mb-4" style="max-width:740px;">
       <div class="card-body d-flex flex-column align-items-end">
-  <div>Subtotal: ₹${subtotal}</div>
-    <div>Tax (18%): ₹${tax}</div>
-    <div>Discount: ₹${discount}</div>
-    <div><strong>Total: ₹${total}</strong></div>
+  <div> <h4>Subtotal: ₹${subtotal}</h4></div>
+    <div><h4>Tax (18%): ₹${tax}</h4></div>
+    <div><h4>Discount: ₹${discount}</h4></div>
+    <div><h4><strong>Total: ₹${total}</h4></strong></div>
     </div>
     </div>`
 }
