@@ -2,23 +2,96 @@ const apiUrl = "https://fakestoreapi.com/products";
 let products = [];
 let categories = [];
 
+// --------------------------
+// Core Functions
+// --------------------------
+
 async function fetchData() {
-  const response = await fetch(apiUrl);
-  products = await response.json();
-  categories = [...new Set(products.map(p => p.category))];
-  renderCategories();
+  try {
+    const response = await fetch(apiUrl);
+    products = await response.json();
+    categories = [...new Set(products.map(p => p.category))];
+    renderCategories();
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
 }
 
 function renderCategories() {
   const categoryList = document.getElementById('categoryList');
   categoryList.innerHTML = '';
+  
   categories.forEach(cat => {
     const li = document.createElement('li');
     li.className = "nav-item mb-2";
-    li.innerHTML = `<a href="#" class="nav-link text-dark" data-category="${cat}">${cat}</a>`;
+    li.innerHTML = `
+      <a href="#" class="nav-link text-dark" data-category="${cat}">
+        ${cat}
+      </a>
+    `;
     categoryList.appendChild(li);
   });
 }
+
+// --------------------------
+// Product Display Functions
+// --------------------------
+
+function displayProducts(productArray) {
+  const productList = document.getElementById('productList');
+  productList.innerHTML = '';
+  
+  productArray.forEach(product => {
+    const col = document.createElement('div');
+    col.className = "col-md-4";
+    col.innerHTML = `
+      <div class="card h-100">
+        <img src="${product.image}" 
+             class="card-img-top" 
+             alt="${product.title}" 
+             style="object-fit:contain;height:200px;">
+        <div class="card-body">
+          <h5 class="card-title">${product.title}</h5>
+          <p class="card-text">$${product.price}</p>
+        </div>
+      </div>
+    `;
+    productList.appendChild(col);
+  });
+}
+
+function showProductsByCategory(category) {
+  document.getElementById('categoryTitle').textContent = `Products in "${category}"`;
+  const filtered = products.filter(p => p.category === category);
+  displayProducts(filtered);
+}
+
+// --------------------------
+// Sorting Functionality
+// --------------------------
+
+function sortProducts(products, order = "asc") {
+  let arr = [...products];
+  let n = arr.length;
+  
+  for (let i = 0; i < n - 1; i++) {
+    for (let j = 0; j < n - i - 1; j++) {
+      const shouldSwap = order === 'asc' 
+        ? arr[j].price > arr[j + 1].price 
+        : arr[j].price < arr[j + 1].price;
+      
+      if (shouldSwap) {
+        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+      }
+    }
+  }
+  
+  displayProducts(arr);
+}
+
+// --------------------------
+// Event Listeners
+// --------------------------
 
 document.getElementById('categoryList').addEventListener('click', function(e) {
   if (e.target.tagName === 'A') {
@@ -27,29 +100,6 @@ document.getElementById('categoryList').addEventListener('click', function(e) {
     showProductsByCategory(selectedCat);
   }
 });
-
-function showProductsByCategory(category) {
-  document.getElementById('categoryTitle').textContent = `Products in "${category}"`;
-  const filtered = products.filter(p => p.category === category);
-  const productList = document.getElementById('productList');
-  productList.innerHTML = '';
-  filtered.forEach(product => {
-    const col = document.createElement('div');
-    col.className = "col-md-4";
-    col.innerHTML = `
-      <div class="card h-100">
-        <img src="${product.image}" class="card-img-top" alt="${product.title}" style="object-fit:contain;height:200px;">
-        <div class="card-body">
-          <h5 class="card-title text-truncate">${product.title}</h5>
-          <p class="card-text text-muted mb-1">${product.category}</p>
-          <p class="text-truncate">${product.description}</p>
-          <strong class="text-success">₹${product.price}</strong>
-        </div>
-      </div>
-    `;
-    productList.appendChild(col);
-  });
-}
 
 document.getElementById('searchInput').addEventListener('input', function(e) {
   const searchText = e.target.value.trim().toLowerCase();
@@ -63,7 +113,6 @@ document.getElementById('searchInput').addEventListener('input', function(e) {
     return;
   }
 
-  // Filter products by title
   const filtered = products.filter(product =>
     product.title.toLowerCase().includes(searchText)
   );
@@ -71,7 +120,6 @@ document.getElementById('searchInput').addEventListener('input', function(e) {
   if (filtered.length === 0) {
     productList.style.display = 'none';
     noResults.style.display = 'block';
-    productList.innerHTML = '';
   } else {
     productList.style.display = 'flex';
     noResults.style.display = 'none';
@@ -79,23 +127,11 @@ document.getElementById('searchInput').addEventListener('input', function(e) {
   }
 });
 
-function displayProducts(productArray) {
-  const productList = document.getElementById('productList');
-  productList.innerHTML = '';
-  productArray.forEach(product => {
-    const col = document.createElement('div');
-    col.className = "col-md-4";
-    col.innerHTML = `
-      <div class="card h-100">
-        <img src="${product.image}" class="card-img-top" alt="${product.title}" style="object-fit:contain;height:200px;">
-        <div class="card-body">
-          <h5 class="card-title">${product.title}</h5>
-          <p class="card-text">$${product.price}</p>
-        </div>
-      </div>
-    `;
-    productList.appendChild(col);
-  });
-}
+document.getElementById('sortAsc').addEventListener('click', () => sortProducts(products, 'asc'));
+document.getElementById('sortDec').addEventListener('click', () => sortProducts(products, 'dec'));
+
+// --------------------------
+// Initialization
+// --------------------------
 
 fetchData();
