@@ -1,6 +1,4 @@
 const slider = document.getElementById('productSlider');
-const nextBtn = document.getElementById('nextBtn');
-const prevBtn = document.getElementById('prevBtn');
 
 1
 fetch('https://fakestoreapi.com/products')
@@ -21,13 +19,3 @@ fetch('https://fakestoreapi.com/products')
     });
   });
 
-
-const scrollAmount = 300; 
-
-nextBtn.addEventListener('click', () => {
-  slider.scrollLeft += scrollAmount;
-});
-
-prevBtn.addEventListener('click', () => {
-  slider.scrollLeft -= scrollAmount;
-});

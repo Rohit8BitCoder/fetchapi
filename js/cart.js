@@ -1,8 +1,39 @@
+function renderCartTotals(subtotal,tax,total,discount){
+  document.getElementById('cart-totals').innerHTML =`
+  <div class="card mb-4" style="max-width:740px;">
+      <div class="card-body d-flex flex-column align-items-end">
+  <div>Subtotal: ₹${subtotal}</div>
+    <div>Tax (18%): ₹${tax}</div>
+    <div>Discount: ₹${discount}</div>
+    <div><strong>Total: ₹${total}</strong></div>
+    </div>
+    </div>`
+}
+
+
+// Cart total calculator with tax and discount logic.
+
+function calculatorTotal(items , taxRate , discount){
+  const subtotal = items.reduce ((acc,item)=> acc + (item.price * item.quantity),0);
+  const tax = (subtotal * taxRate) / 100;
+  const total = subtotal + tax - discount;
+  
+  return { 
+    subtotal: subtotal.toFixed(2),
+    tax: tax.toFixed(2),
+    total: total > 0 ? total.toFixed(3): '0.00',
+    discount: discount.toFixed(2)};
+ 
+}
+
 // -------------------------------------------
 // Render Cart Function
 // -------------------------------------------
 function renderCart() {
   const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+  const totals = calculatorTotal(cart,18,30);
+   renderCartTotals(totals.subtotal, totals.tax, totals.total, totals.discount);
+
   const cartItemsDiv = document.getElementById('cart-items');
 
   // If cart is empty
@@ -51,3 +82,6 @@ function renderCart() {
 // Initial render on DOMContentLoaded
 // -------------------------------------------
 document.addEventListener('DOMContentLoaded', renderCart);
+
+
+
