@@ -2,35 +2,6 @@ const apiUrl = "https://fakestoreapi.com/products";
 let products = [];
 let categories = [];
 
-
-function findSkuGaps(products) {
-  // Group product IDs by category
-  const categoryMap = {};
-  products.forEach(product => {
-    const cat = product.category;
-    if (!categoryMap[cat]) categoryMap[cat] = [];
-    categoryMap[cat].push(product.id);
-  });
-
-  // For each category, find missing IDs in the range
-  const gaps = {};
-  for (const cat in categoryMap) {
-    const ids = categoryMap[cat].sort((a, b) => a - b);
-    const min = ids[0];
-    const max = ids[ids.length - 1];
-    const missing = [];
-    for (let i = min; i <= max; i++) {
-      if (!ids.includes(i)) {
-        missing.push(i);
-      }
-    }
-    if (missing.length > 0) {
-      gaps[cat] = missing;
-    }
-  }
-  return gaps;
-}
-
 // --------------------------
 // Core Functions
 // --------------------------
@@ -83,7 +54,6 @@ function displayProducts(productArray) {
           <h5 class="card-title">${product.title}</h5>
           <p class="card-text">$${product.price}</p>
           <button class="btn btn-primary add-to-cart-btn" data-id="${product.id}">Add to Cart</button>
-          <div class="mt-2"><small>SKU: ${generateSku(product)}</small></div>
         </div>
       </div>
     `;
@@ -175,19 +145,13 @@ document.getElementById('searchInput').addEventListener('input', function(e) {
   }
 });
 
+document.getElementById('skuGapsBtn').addEventListener('click', function() {
+  const gaps = findMissingSkus(products);
+  alert('Missing SKUs:\n' + JSON.stringify(gaps, null, 2));
+});
+
 document.getElementById('sortAsc').addEventListener('click', () => sortProducts(products, 'asc'));
 document.getElementById('sortDec').addEventListener('click', () => sortProducts(products, 'dec'));
-
-
-document.addEventListener('DOMContentLoaded', function() {
-  const skuGapsBtn = document.getElementById('skuGapsBtn');
-  if (skuGapsBtn) {
-    skuGapsBtn.addEventListener('click', function() {
-      const gaps = findSkuGaps(products);
-      alert('Missing SKUs:\n' + JSON.stringify(gaps, null, 2));
-    });
-  }
-});
 
 // --------------------------
 // Initialization

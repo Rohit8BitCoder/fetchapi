@@ -1,12 +1,4 @@
 
- function generateSku(product) {
-
-  const cat = product.category ? product.category.slice(0, 3).toUpperCase() : "GEN";
-  const id = product.id;
-  return `SKU-${cat}-${id}`;
-}
-
-
 
 const api = "https://fakestoreapi.com/products";
 
@@ -19,9 +11,8 @@ fetch(api)
     const productsContainer = document.getElementById('products');
 
     products.forEach((product) => {
-      
-       const sku = generateSku(product);
-       console.log(sku);
+      const sku = generateSku(product.category, product.id);
+  console.log(` $SKU: ${sku}`);
 
       // Create product card
       const productCard = document.createElement('div');
@@ -80,3 +71,36 @@ fetch(api)
     console.error('Error fetching products:', error);
     document.getElementById('products').innerHTML = `<p class="text-danger">Failed to load products.</p>`;
   });
+
+  // Generate SKU for a product
+function generateSku(category, id) {
+  return `SKU-${category.slice(0, 3).toUpperCase()}-${id}`;
+}
+
+// Find ALL missing numbers in an array between 1 and 10
+function findAllMissing(arr) {
+  const missing = [];
+  for (let i = 1; i <= 10; i++) {
+    if (!arr.includes(i)) missing.push(i);
+  }
+  return missing;
+}
+
+// Find missing SKUs for each category (IDs 1-10)
+function findMissingSkus(products) {
+  const categoryMap = {};
+  products.forEach(product => {
+    if (!categoryMap[product.category]) categoryMap[product.category] = [];
+    categoryMap[product.category].push(product.id);
+  });
+
+  const missingSkus = {};
+  for (const cat in categoryMap) {
+    const ids = categoryMap[cat].filter(id => id >= 1 && id <= 10);
+    const missingIds = findAllMissing(ids);
+    if (missingIds.length > 0) {
+      missingSkus[cat] = missingIds.map(id => generateSku(cat, id));
+    }
+  }
+  return missingSkus;
+}
